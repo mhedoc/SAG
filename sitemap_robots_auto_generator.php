@@ -12,7 +12,7 @@
  Text Domain: sitemap_auto_generator
  */
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
-function sitemap_auto_generator(){
+function sitemap_robots_auto_generator(){
 	
 	global $wpdb;
 	$query = $wpdb->get_col( $wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE (post_type like 'post' OR post_type like 'page') AND post_status NOT LIKE 'auto-draft'"));
@@ -57,4 +57,4 @@ function sitemap_auto_generator(){
 	fwrite($txtFile, $text);
 	fclose($txtFile);
 }
-add_action('save_post', 'sitemap_auto_generator');
+add_action('save_post', 'sitemap_robots_auto_generator');
