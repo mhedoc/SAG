@@ -2,7 +2,7 @@
 /*
  Plugin Name: Sitemap Auto Generator
  Plugin URI:  http://permutat.de
- Description: Creates sitemap for website
+ Description: Creates sitemap in wordpress home folder
  Version:     1.0
  Author:      Mamun Hodali
  Author URI:  http://permutat.de
@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 function sitemap_auto_generator(){
 	
 	global $wpdb;
-	$query = $wpdb->get_col( $wpdb->prepare("SELECT ID FROM $wpdb->posts"));
+	$query = $wpdb->get_col( $wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE (post_type like 'post' OR post_type like 'page') AND post_status NOT LIKE 'auto-draft'"));
 	$path = get_home_path();
 	
 	$doc = new DOMDocument('1.0', 'UTF-8');
@@ -39,15 +39,22 @@ function sitemap_auto_generator(){
 	
 	foreach ($query as $key => $value){
 		$url = $doc->createElement('url');
-		$url = $doc->appendChild($url);
+		$url = $def->appendChild($url);
 		
 		$loc = $doc->createElement('loc');
 		$loc = $url->appendChild($loc);
 		
 		$link = $doc->createTextNode(get_permalink($value));
-		$link = $loc->appendChild($link);	
+		$link = $loc->appendChild($link);
 	}
 	$doc->save($path."/sitemap");
 
+//Create robots.txt
+	
+	$txtFile = fopen($path."/robots.txt", "w");
+	
+	$text = "User-agent: *". PHP_EOL . "Disallow: /wp-admin/". PHP_EOL . "Sitemap: ".get_site_url()."/sitemap";
+	fwrite($txtFile, $text);
+	fclose($txtFile);
 }
 add_action('save_post', 'sitemap_auto_generator');
