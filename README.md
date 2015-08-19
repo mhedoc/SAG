@@ -1,2 +1,2 @@
 # SAG
-Sitemap Auto Generator for Wordpress
+Sitemap Robots Auto Generator for Wordpress
